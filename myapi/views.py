@@ -3,6 +3,9 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework import generics
+from .serializers import MyTokenObtainPairSerializer, UserSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+
 
 # Create your views here.
 from rest_framework.views import APIView
@@ -80,6 +83,15 @@ class UserLogoutAPIView(APIView):
         token.delete()
         return Response({"success": True, "detail": "Logged out!"}, status=status.HTTP_200_OK)
     
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+class RegisterView(APIView):
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 class CourseAPIView(generics.ListAPIView):
     queryset = Course.objects.all()

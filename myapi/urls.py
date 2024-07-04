@@ -11,10 +11,16 @@ from .views import QuizAPIView
 from .views import ContentTopicAPIView
 from .views import QuizQuestionAPIView
 from .views import QuizQuestionChoiceAPIView
+from .views import MyTokenObtainPairView
+from .views import TokenRefreshView
+from .views import RegisterView
 
 urlpatterns = [
+    path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('register/', RegisterView.as_view(), name='register'),
     path("login/", UserLoginAPIView.as_view(), name="user_login"),
-    path("register/", UserRegisterAPIView().as_view(), name="user_register"),
+    #path("register/", UserRegisterAPIView().as_view(), name="user_register"),
     path("logout/", UserLogoutAPIView.as_view(), name="user_logout"),
     path('courses/', CourseAPIView.as_view(), name='course-list'),
     path('courses/<int:course_id>/weeks/', WeekAPIView.as_view(), name='week-list'),

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from rest_framework.exceptions import ValidationError
 from rest_framework import status
 from rest_framework.authtoken.models import Token
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import Course
 from .models import Week
@@ -64,7 +65,28 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.save()
         Token.objects.create(user=user)
         return user
-    
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['username'] = user.username
+        return token
+
+class UserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ["id", "email", "username", "password"]
+
+    def create(self, validated_data):
+        user = User.objects.create(email=validated_data['email'],
+                                       username=validated_data['username']
+                                         )
+        user.set_password(validated_data['password'])
+        user.save()
+        return user
 
 class CourseSerializer(serializers.ModelSerializer):
     class Meta:
